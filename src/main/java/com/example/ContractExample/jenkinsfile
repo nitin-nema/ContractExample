@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh './mvn clean install'
+            }
+        }
+        stage('Consumer Pact Test') {
+            steps {
+                sh './mvn test -Dtest=ShoppingCartServiceTest'
+            }
+        }
+        stage('Publish Pact to Broker') {
+            steps {
+                sh './mvn pact:publish'
+            }
+        }
+        stage('Provider Pact Verification') {
+            steps {
+                sh './mvn test -Dtest=InventoryServiceTest'
+            }
+        }
+    }
+}
